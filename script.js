@@ -1,5 +1,5 @@
-//CADASTRO
-const form = document.getElementById('cadastro-form');
+// CADASTRO
+const cadastroForm = document.getElementById('cadastro-form');
 
 if (cadastroForm) {
     cadastroForm.addEventListener('submit', function (event) {
@@ -22,10 +22,11 @@ if (cadastroForm) {
     });
 }
 
-//LOGIN
+
+// LOGIN
 const loginForm = document.getElementById('login-form');
 
- if (loginForm) {
+if (loginForm) {
     loginForm.addEventListener('submit', function(event) {
         event.preventDefault();
 
@@ -34,8 +35,9 @@ const loginForm = document.getElementById('login-form');
 
         const userData = JSON.parse(localStorage.getItem("userData"));
 
-        if (email === userData.email && password === userData.password) {
+        if (userData && email === userData.email && password === userData.password) {
             alert('Logado com sucesso!');
+            window.location.href = "index.html";
         } else {
             alert('Email ou senha inválidos.');
         }
