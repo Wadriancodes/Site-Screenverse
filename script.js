@@ -15,7 +15,22 @@ if (cadastroForm) {
             password: pass
         };
 
-        localStorage.setItem("userData", JSON.stringify(userData));
+        fetch("http://localhost:3000/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: user,
+            email: email,
+            password: pass
+        })
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message);
+            window.location.href = "login.html";
+        });
 
         alert("Cadastro realizado!");
         window.location.href = "login.html";
@@ -33,7 +48,25 @@ if (loginForm) {
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
 
-        const userData = JSON.parse(localStorage.getItem("userData"));
+        fetch("http://localhost:3000/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+            email: email,
+            password: password
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.user) {
+                alert("Login OK");
+                window.location.href = "index.html";
+            } else {
+                alert("Erro no login");
+            }
+        });
 
         if (userData && email === userData.email && password === userData.password) {
             alert('Logado com sucesso!');
