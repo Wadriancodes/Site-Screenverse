@@ -1,9 +1,3 @@
-console.log("Servidor rodando...");
-
-import express from "express";
-import sqlite3 from "sqlite3";
-import cors from "cors";
-
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const cors = require("cors");
