@@ -1,15 +1,13 @@
 /* ---------- VARIÁVEIS ---------- */
 :root {
-    /* Cores */
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-tertiary: #334155;
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --accent: #3b82f6;
-    --accent-hover: #2563eb;
-    --danger: #e50914;
-    --danger-hover: #b20710;
+    /* Cores - Dark Mode */
+    --bg-primary: #0a0a0f;
+    --bg-secondary: #12121a;
+    --bg-tertiary: #1a1a25;
+    --text-primary: #e8e8ec;
+    --text-secondary: #8a8a9a;
+    --accent: #667eea;
+    --accent-hover: #764ba2;
     
     /* Gradiente */
     --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -45,13 +43,14 @@ html, body {
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Rajdhani', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     line-height: 1.6;
+    letter-spacing: 0.5px;
 }
 
 a {
@@ -83,9 +82,11 @@ header {
 
 .title {
     font-size: 2rem;
-    font-weight: 600;
-    letter-spacing: 2px;
+    font-weight: 700;
+    letter-spacing: 3px;
     text-transform: uppercase;
+    color: var(--text-primary);
+    text-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
 }
 
 .title a {
@@ -123,13 +124,17 @@ nav {
     border-radius: var(--radius-md);
     color: var(--text-primary);
     transition: all var(--transition-normal);
-    font-size: 0.95rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .nav-links a:hover,
 .nav-links a.active {
     background-color: var(--bg-tertiary);
     color: var(--accent);
+    text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
 }
 
 /* Botão de Login separado */
@@ -138,13 +143,26 @@ nav {
     border-radius: var(--radius-md);
     background: var(--gradient-primary);
     color: white !important;
-    font-weight: 600;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     transition: all var(--transition-normal);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-login img {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
 }
 
 .nav-login:hover {
     background: var(--gradient-hover);
     transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
 }
 
 /* ---------- SEÇÃO DE NOTÍCIAS ---------- */
@@ -161,8 +179,11 @@ nav {
     grid-column: 1 / -1;
     text-align: center;
     margin-bottom: var(--space-lg);
-    font-size: 1.5rem;
-    color: var(--text-secondary);
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
 }
 
 /* ---------- CARDS ---------- */
@@ -172,13 +193,16 @@ nav {
     border-radius: var(--radius-lg);
     transition: all var(--transition-normal);
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    border: 1px solid transparent;
 }
 
 .card:hover {
     transform: translateY(-5px);
     background-color: var(--bg-tertiary);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    border-color: var(--accent);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
 }
 
 .card img {
@@ -234,14 +258,21 @@ nav {
 /* Formulário */
 .form-group {
     margin-bottom: var(--space-md);
+    color: var(--text-secondary);
 }
 
 .form-group label {
     display: block;
     margin-bottom: var(--space-xs);
     font-size: 0.9rem;
-    color: var(--text-secondary);
 }
+
+.form-group p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-align: center;
+    padding-top: 5%;
+    }
 
 .form-group input {
     width: 100%;

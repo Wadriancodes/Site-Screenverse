@@ -30,7 +30,6 @@ if (cadastroForm) {
         }
 
         // PASSO 5: Enviar dados para o servidor
-        // Nota: A criptografia da senha é feita NO SERVIDOR, nunca no cliente!
         fetch("http://localhost:3000/register", {
             method: "POST",
             credentials: "include", // Inclui cookies para manter sessão
