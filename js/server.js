@@ -2,7 +2,7 @@ const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const cors = require("cors");
 const session = require("express-session");
-const bcrypt = require("bcrypt"); // Importa a biblioteca de criptografia
+const bcrypt = require("bcrypt");
 
 const app = express();
 app.use(cors({
