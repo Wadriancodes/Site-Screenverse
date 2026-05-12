@@ -1,0 +1,30 @@
+# Node.js dependencies
+/node_modules
+
+# Environment files
+.env
+*.env
+backend/sla.env
+
+# Database files
+*.db
+database.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# VS Code settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Ignore local frontend assets cache or temp folders
+frontend/imagens temporárias/

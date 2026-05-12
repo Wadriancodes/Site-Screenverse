@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screenverse - Cadastro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="../uploads/Logo Screenverse.svg" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <h1 class="title"><a href="../index.html">Screenverse</a></h1>
+    </header>
+    <main>
+        <div class="auth-wrapper">
+            <div class="auth-box">
+                <h2>Cadastro</h2>
+                <form id="cadastroform">
+                    <div class="form-group">
+                        <label for="newUser">Usuário</label>
+                        <input type="text" id="newUser" name="username" placeholder="Seu nome de usuário" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newEmail">Email</label>
+                        <input type="email" id="newEmail" name="email" placeholder="seu@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPass">Senha</label>
+                        <input type="password" id="newPass" name="password" placeholder="••••••••" required>
+                        <p>A senha deve ter pelo menos 6 caracteres.</p>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2026 Screenverse. Todos os direitos reservados.</p>
+    </footer>
+    <script src="../script.js"></script>
+</body>
+</html>
