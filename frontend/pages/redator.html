@@ -21,7 +21,7 @@
                 <li><a href="animes.html">Animes</a></li>
                 <li><a href="sugestoes.html" class="active">Sugestões</a></li>
             </ul>
-            <a href="login.html" class="nav-login">Login <img src="../imagens temporárias/login_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg"></a>
+            <a href="login.html" class="nav-login">Login <img src="../uploads/login_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg"></a>
         </nav>    
     </header>
     <main>
@@ -29,7 +29,7 @@
             <h2>Página do Redator</h2>
             <p class="page-description"></p>
             <div class="news-form">
-                <form>
+                <form id="news-form">
                     <div class="form-group">
                         <label for="news-type">Tipo</label>
                         <select id="news-type" name="type">
@@ -43,8 +43,18 @@
                         <input type="text" id="news-title" name="title" placeholder="Título da notícia" required>
                     </div>
                     <div class="form-group">
-                        <label for="news-message">Descrição (opcional)</label>
-                        <textarea id="news-message" name="message" rows="4" placeholder="Descrição da notícia"></textarea>
+                        <label for="news-image">Imagem da Notícia</label>
+                        <input type="file" id="news-image" name="image" placeholder="Imagem da notícia" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="news-content">Conteúdo da Notícia</label>
+                        <textarea 
+                            id="news-content"
+                            name="content"
+                            rows="10"
+                            placeholder="Escreva a notícia completa"
+                            required
+                        ></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Enviar Notícia</button>
                 </form>
@@ -54,6 +64,6 @@
     <footer>
         <p>&copy; 2026 Screenverse. Todos os direitos reservados.</p>
     </footer>
-    
+    <script src="../script.js"></script>
 </body>
 </html>

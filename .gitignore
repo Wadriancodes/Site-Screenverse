@@ -1,10 +1,13 @@
 # Node.js dependencies
 /node_modules
+**/node_modules
 
 # Environment files
 .env
 *.env
-backend/sla.env
+backend/.env
+.package-lock.json
+yarn.lock
 
 # Database files
 *.db
@@ -27,4 +30,4 @@ Thumbs.db
 *.temp
 
 # Ignore local frontend assets cache or temp folders
-frontend/imagens temporárias/
+uploads/
