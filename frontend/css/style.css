@@ -318,6 +318,36 @@ nav {
     transform: translateY(-2px);
 }
 
+/* Botão de Logout */
+#logout-btn {
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-md);
+    background: var(--gradient-primary);
+    color: white !important;
+    font-weight: 700;
+    font-family: 'Rajdhani', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all var(--transition-normal);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#logout-btn:hover {
+    background: var(--gradient-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+}
+
+#logout-btn:active {
+    transform: translateY(0);
+}
+
 /* ---------- FOOTER ---------- */
 footer {
     background-color: var(--bg-secondary);
@@ -362,6 +392,11 @@ footer p {
     .nav-login img {
         width: 14px;
         height: 14px;
+    }
+
+    #logout-btn {
+        padding: 4px 8px;
+        font-size: 0.65rem;
     }
     
     .news {

@@ -248,6 +248,23 @@ app.get("/news", (req, res) => {
     });
 });
 
+app.get("/news/:id", (req, res) => {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+        return res.status(400).json({ error: "ID inválido" });
+    }
+
+    db.get("SELECT * FROM news WHERE id = ?", [id], (err, row) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        if (!row) {
+            return res.status(404).json({ error: "Notícia não encontrada" });
+        }
+        res.json(row);
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
