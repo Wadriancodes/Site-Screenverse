@@ -7,12 +7,13 @@ const crypto = require("crypto");
 const path = require("path");
 const dotenv = require("dotenv");
 const multer = require("multer");
+const hemelt = require("helmet");
 
 dotenv.config({ path: path.join(__dirname, ".env") });
 
 let SECRET_KEY = process.env.ENCRYPTION_KEY;
 let HASH_PEPPER = process.env.HASH_PEPPER;
-const DB_PATH = process.env.DB_PATH || "./database.db";
+const DB_PATH = process.env.DB_PATH ? path.resolve(__dirname, process.env.DB_PATH) : path.join(__dirname, "database.db");
 const PORT = parseInt(process.env.PORT, 10) || 3000;
 
 function assertEnv() {
@@ -55,9 +56,31 @@ function hashEmail(email) {
 
 const app = express();
 
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'"],
+            styleSrc: ["'self'", "https://fonts.googleapis.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
+            imgSrc: ["'self'", "data:", "http://localhost:3000"],
+            connectSrc: ["'self'", "http://localhost:3000"]
+        }
+    }
+}));
+
+const isProduction = process.env.NODE_ENV === "production";
+
 app.use(cors({
-    origin: ["http://127.0.0.1:5500", "http://localhost:5500"],
-    credentials: true
+    origin: [
+        "http://127.0.0.1:5500",
+        "http://localhost:5500",
+        "http://127.0.0.1:3000",
+        "http://localhost:3000"
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type"]
 }));
 
 app.use(express.json());
@@ -66,16 +89,18 @@ app.use(session({
     secret: SECRET_KEY,
     resave: false,
     saveUninitialized: false,
-    cookie: { 
-        secure: false,
+    cookie: {
+        secure: isProduction,
         httpOnly: true,
+        sameSite: isProduction ? "none" : "lax",
         maxAge: 60 * 60 * 1000
      }
 }));
 
 const db = new sqlite3.Database(DB_PATH);
 
-db.run(`
+db.serialize(() => {
+    db.run(`
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE,
@@ -83,12 +108,33 @@ CREATE TABLE IF NOT EXISTS users (
     email_iv TEXT,
     email_auth_tag TEXT,
     email_hash TEXT UNIQUE,
-    password TEXT NOT NULL
+    password TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'user'
 )
-`);
+    `);
+
+    db.all("PRAGMA table_info(users)", (err, columns) => {
+        if (err) {
+            console.error("Erro ao verificar colunas da tabela users:", err.message);
+            return;
+        }
+        const hasRoleColumn = columns.some(column => column.name === "role");
+        if (!hasRoleColumn) {
+            db.run("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'", err => {
+                if (err) {
+                    console.error("Erro ao adicionar coluna role à tabela users:", err.message);
+                }
+            });
+        }
+    });
+});
 
 app.post("/register", (req, res) => {
     const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+        return res.status(400).json({ error: "Todos os campos são obrigatórios" });
+    }
 
     bcrypt.genSalt(12, (err, salt) => {
         if (err) {
@@ -105,19 +151,41 @@ app.post("/register", (req, res) => {
             const emailEncrypted = encryptedParts[1];
             const emailAuthTag = encryptedParts[2];
 
-            db.run(
-                "INSERT INTO users (username, email_encrypted, email_iv, email_auth_tag, email_hash, password) VALUES (?, ?, ?, ?, ?, ?)",
-                [username, emailEncrypted, emailIv, emailAuthTag, hashEmail(email), hash], 
-                function (err) {
-                    if (err) {
-                        return res.status(500).json({ error: err.message });
-                    }
-                    res.json({ message: "Usuário cadastrado!" });
+            db.get("SELECT COUNT(*) AS count FROM users", (err, row) => {
+                if (err) {
+                    return res.status(500).json({ error: err.message });
                 }
-            );
+
+                const role = row.count === 0 ? "admin" : "user";
+
+                db.run(
+                    "INSERT INTO users (username, email_encrypted, email_iv, email_auth_tag, email_hash, password, role) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    [username, emailEncrypted, emailIv, emailAuthTag, hashEmail(email), hash, role],
+                    function (err) {
+                        if (err) {
+                            return res.status(500).json({ error: err.message });
+                        }
+                        res.json({ message: `Usuário cadastrado como ${role}!` });
+                    }
+                );
+            });
         });
     });
 });
+
+function requireLogin(req, res, next) {
+    if (req.session && req.session.user) {
+        return next();
+    }
+    res.status(401).json({ message: "Usuário não autenticado" });
+}
+
+function requireAdmin(req, res, next) {
+    if (req.session && req.session.user && req.session.user.role === "admin") {
+        return next();
+    }
+    res.status(403).json({ message: "Acesso negado" });
+}
 
 app.post("/login", (req, res) => {
     const { email, password } = req.body;
@@ -142,18 +210,18 @@ app.post("/login", (req, res) => {
                     req.session.user = {
                         id: user.id,
                         username: user.username,
+                        role: user.role || "user",
                         userEmail: user.email,
                         userEmailIv: user.email_iv,
                         userEmailAuthTag: user.email_auth_tag,
-                        userEmailHash: user.email_hash,
-                        user: user
+                        userEmailHash: user.email_hash
                     };
 
                     req.session.save(err => {
                         if (err) {
                             return res.status(500).json({ error: "Erro ao salvar sessão" });
                         }
-                        res.json({ message: "Login efetuado", user: { id: user.id, username: user.username } });
+                        res.json({ message: "Login efetuado", user: { id: user.id, username: user.username, role: req.session.user.role } });
                     });
                 } else {
                     res.status(401).json({ message: "Senha inválida" });
@@ -180,7 +248,57 @@ app.post("/logout", (req, res) => {
     });
 });
 
+app.post("/admin/redator", requireLogin, requireAdmin, (req, res) => {
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+        return res.status(400).json({ error: "Todos os campos são obrigatórios" });
+    }
+
+    bcrypt.genSalt(12, (err, salt) => {
+        if (err) {
+            return res.status(500).json({ error: "Erro ao gerar salt" });
+        }
+
+        bcrypt.hash(password, salt, (err, hash) => {
+            if (err) {
+                return res.status(500).json({ error: "Erro ao criptografar senha" });
+            }
+
+            const encryptedParts = encrypt(email).split(":");
+            const emailIv = encryptedParts[0];
+            const emailEncrypted = encryptedParts[1];
+            const emailAuthTag = encryptedParts[2];
+
+            db.run(
+                "INSERT INTO users (username, email_encrypted, email_iv, email_auth_tag, email_hash, password, role) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                [username, emailEncrypted, emailIv, emailAuthTag, hashEmail(email), hash, "redator"],
+                function (err) {
+                    if (err) {
+                        return res.status(500).json({ error: err.message });
+                    }
+                    res.json({ message: "Redator criado com sucesso!", userId: this.lastID });
+                }
+            );
+        });
+    });
+});
+
+app.get("/admin/users", requireLogin, requireAdmin, (req, res) => {
+    db.all("SELECT id, username, role FROM users ORDER BY role DESC, username", (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(rows);
+    });
+});
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.use(express.static(path.join(__dirname, "../frontend")));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/index.html"));
+
+});
 
     db.run(
         `CREATE TABLE IF NOT EXISTS news (
