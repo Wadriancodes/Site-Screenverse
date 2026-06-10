@@ -1,7 +1,7 @@
 # Site-Screenverse
 Trabalho de Programação Web Coding
 
-#Como usar o Screenverse!
+<h2>Como usar o Screenverse!</h2>
 
 \---O proprio Codigo ou uma foto de uma parte do Codigo---/
 
