@@ -341,3 +341,8 @@ Trabalho de Programação Web Coding
                
 Essa amostra é um Bloco codigo de Log in!
 e o link para abaixar --->  [Site-Screenverse-main.zip](https://github.com/user-attachments/files/28860811/Site-Screenverse-main.zip)
+
+E os Creditos!
+José Luis Soares Borges - 04190015
+Arthur Ferreira Pujals - 04178690
+Wadrian Macario - ?
