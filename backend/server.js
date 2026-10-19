@@ -241,7 +241,7 @@ app.get("/me", (req, res) => {
 
 app.post("/logout", (req, res) => {
     req.session.destroy(err => {
-        i (err) {f
+        if (err) {
             return res.status(500).json({ error: "Erro ao destruir sessão" });
         }
         res.json({ message: "Logout efetuado" });
