@@ -7,7 +7,7 @@ const crypto = require("crypto");
 const path = require("path");
 const dotenv = require("dotenv");
 const multer = require("multer");
-const hemelt = require("helmet");
+const helmet = require("helmet");
 
 dotenv.config({ path: path.join(__dirname, ".env") });
 
@@ -241,7 +241,7 @@ app.get("/me", (req, res) => {
 
 app.post("/logout", (req, res) => {
     req.session.destroy(err => {
-        if (err) {
+        i (err) {f
             return res.status(500).json({ error: "Erro ao destruir sessão" });
         }
         res.json({ message: "Logout efetuado" });
@@ -289,6 +289,23 @@ app.get("/admin/users", requireLogin, requireAdmin, (req, res) => {
             return res.status(500).json({ error: err.message });
         }
         res.json(rows);
+    });
+});
+
+// Remover usuário (apenas admin) - protege para não remover outros admins
+app.delete('/admin/user/:id', requireLogin, requireAdmin, (req, res) => {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+
+    db.get('SELECT id, username, role FROM users WHERE id = ?', [id], (err, user) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
+        if (user.role === 'admin') return res.status(403).json({ error: 'Não é permitido remover um admin' });
+
+        db.run('DELETE FROM users WHERE id = ?', [id], function(err) {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ message: 'Usuário removido', deleted: this.changes });
+        });
     });
 });
 
@@ -385,4 +402,25 @@ app.get("/news/:id", (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
+});
+
+// Deletar notícia (redator proprietário ou admin)
+app.delete('/news/:id', requireLogin, (req, res) => {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+
+    db.get('SELECT * FROM news WHERE id = ?', [id], (err, row) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!row) return res.status(404).json({ error: 'Notícia não encontrada' });
+
+        const requester = req.session.user;
+        if (requester.role === 'admin' || requester.id === row.author_id) {
+            db.run('DELETE FROM news WHERE id = ?', [id], function(err) {
+                if (err) return res.status(500).json({ error: err.message });
+                res.json({ message: 'Notícia removida', deleted: this.changes });
+            });
+        } else {
+            res.status(403).json({ error: 'Não autorizado a remover esta notícia' });
+        }
+    });
 });
