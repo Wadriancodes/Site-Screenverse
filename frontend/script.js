@@ -117,6 +117,20 @@ if (loginForm) {
 
         const email = document.getElementById("login-email").value;
         const password = document.getElementById("login-password").value;
+        const tentativeLoginCount = parseInt(localStorage.getItem('tentativeLoginCount') || '0', 10);
+        if (tentativeLoginCount >= 5) {
+            alert("Muitas tentativas de login. Tente novamente mais tarde.");
+            return;
+        }
+        const rememberMe = document.getElementById("remember-me").checked;
+        const sessionDuration = rememberMe ? 7 * 24 * 60 * 60 * 1000 : null; // 7 dias em milissegundos
+        const sessionExpiry = sessionDuration ? new Date(Date.now() + sessionDuration).toISOString() : null;
+        const sessionExpiryInput = document.getElementById("session-expiry");
+        if (sessionExpiryInput) {
+            sessionExpiryInput.value = sessionExpiry;
+        }
+
+
 
         if (!email || !password) {
             alert("Por favor, preencha email e senha!");
@@ -136,11 +150,13 @@ if (loginForm) {
         })
         .then(response => {
             if (!response.ok) {
+                localStorage.setItem('tentativeLoginCount', (tentativeLoginCount + 1).toString());
                 throw new Error("Login inválido");
             }
             return response.json();
         })
         .then(data => {
+            localStorage.removeItem('tentativeLoginCount');
             alert("Login realizado com sucesso!");
 
             const role = data.user?.role || 'user';
@@ -161,7 +177,6 @@ if (loginForm) {
             } else if (role === 'redator') {
                 window.location.href = `${apiBase}/pages/redator.html`;
             } else {
-                // regular users: keep on the frontend root served by backend
                 window.location.href = `${apiBase}/index.html`;
             }
         })

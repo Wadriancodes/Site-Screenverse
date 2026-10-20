@@ -190,6 +190,7 @@ function requireAdmin(req, res, next) {
 app.post("/login", (req, res) => {
     const { email, password } = req.body;
     const emailHash = hashEmail(email);
+    let tentativePassword = 0;
     
     db.get(
         "SELECT * FROM users WHERE email_hash = ?",
@@ -224,7 +225,9 @@ app.post("/login", (req, res) => {
                         res.json({ message: "Login efetuado", user: { id: user.id, username: user.username, role: req.session.user.role } });
                     });
                 } else {
-                    res.status(401).json({ message: "Senha inválida" });
+                    res.status(401).json({ message: "Senha inválida, tente novamente" });
+                } if (++tentativePassword >= 5) {
+                    return res.status(429).json({ message: "Muitas tentativas de login. Tente novamente mais tarde." });
                 }
             });
         }
